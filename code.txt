@@ -1,0 +1,52 @@
+const { ObjectId } = require('mongoose').Types; // If using Mongoose
+
+// Assuming you have a schema and a model for your user, like "Person" in your previous example.
+
+// Step 1: Retrieve the old image path before updating
+const user = await Person.findById(userId); // Assuming you have the user's ID
+
+if (!user) {
+  return res.status(404).json({ "status": "failed", "message": "User not found", "statusCode": 404 });
+}
+
+const oldImagePath = user.image;
+
+// Step 2: Update the document with the new image
+if (typeof userFormData.age === "string") {
+    res.status(400).json({ "status": "failed", "message": "Age must be a number", "statusCode": 400 });
+} else {
+    const updatedData = {
+        name: userFormData.name,
+        description: userFormData.description,
+        age: userFormData.age
+    };
+
+    // Check if there's a new image file provided in the request
+    if (req.file) {
+        updatedData.image = req.file.path;
+    }
+
+    // Use Mongoose to update the user by their ID
+    const updatedUser = await Person.findByIdAndUpdate(userId, updatedData, { new: true });
+
+    // Step 3: Delete the old image file
+    if (oldImagePath && oldImagePath !== updatedData.image) {
+        const fs = require('fs').promises; // Use the built-in 'fs' module to delete files
+
+        try {
+            await fs.unlink(oldImagePath);
+        } catch (error) {
+            console.error(`Failed to delete old image: ${error}`);
+        }
+    }
+
+    // updatedUser now contains the updated user document, and the old image has been deleted if it was replaced with a new one.
+    console.log(updatedUser);
+}
+
+
+
+//atles mongo connection.
+
+
+mongodb+srv://Deepak:kkbY5JScB6ZicgCJ@cluster0.wsl09kx.mongodb.net/?retryWrites=true&w=majority

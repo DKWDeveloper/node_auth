@@ -1,0 +1,38 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+// Sample data to simulate messages
+let messages = [
+    { id: 1, sender: 'user1', receiver: 'user2', text: 'Hello!' },
+    { id: 2, sender: 'user2', receiver: 'user1', text: 'Hi there!' }
+];
+
+app.use(bodyParser.json());
+
+// Route to delete a message on the sender's side
+app.delete('/messages/:id', (req, res) => {
+    const messageId = parseInt(req.params.id);
+    const messageIndex = messages.findIndex(message => message.id === messageId);
+
+    if (messageIndex === -1) {
+        return res.status(404).json({ error: 'Message not found' });
+    }
+
+    const message = messages[messageIndex];
+
+    // Check if the current user is the sender of the message
+    if (message.sender === 'user1') { // Change 'user1' to the actual sender's ID
+        // Delete the message from the sender's side
+        messages.splice(messageIndex, 1);
+        return res.status(200).json({ message: 'Message deleted successfully on sender side' });
+    } else {
+        return res.status(403).json({ error: 'Unauthorized to delete this message' });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
