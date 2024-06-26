@@ -22,16 +22,31 @@ class UserData {
         }
     }
 
+    static areFieldsValid = (body) => {
+        console.log(body)
+        for (const key in body) {
+            if (!body[key]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Define the POST route.
      * @param {*} req 
      * @param {*} res 
      */
     static postUserData = async (req, res) => {
-        const { name, description, age } = req.body;
         const image = req.file ? req.file.path : '';
-        const userFormData = JSON.parse(req.body.user);
         try {
+            const { name, description, age } = req.body;
+            const userFormData = JSON.parse(req.body.user);
+            console.log('user', userFormData)
+            // if(!this.areFieldsValid(userFormData)){
+            //     console.log("remove the image")
+            //     this.removeImage(image);
+            // }
             if (userFormData.name && userFormData.description && image && userFormData.age) {
                 if (typeof userFormData.age === "string") {
                     this.removeImage(image);
@@ -49,11 +64,11 @@ class UserData {
                 }
             } else {
                 this.removeImage(image);
-                res.status(201).send({ "status": "failed", "message": "All Field Required", "statusCode": 200 });
+                res.status(400).send({ "status": "failed", "message": "All Field Required", "statusCode": 400 });
             }
         } catch (err) {
-            res.status(500).json({ "message": "Internal Server Error", error: err.message });
             this.removeImage(image);
+            res.status(500).send({ "message": "Internal Server Error"});
         }
     }
 
