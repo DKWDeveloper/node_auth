@@ -5,6 +5,7 @@ import transporter from "../config/emailConfig.js";
 import Otp from "../models/otp.js";
 import schedule from "node-schedule";
 import validator from "validator";
+import Session from '../models/session.js';
 
 class UserController {
 
@@ -61,6 +62,9 @@ class UserController {
                     if ((userData.email === email) && isPasswordMatch) {
                         //Generate JWT Token.
                         const token = jwt.sign({ userId: userData._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' })
+                        req.session.userId = userData._id;
+                        // Create a new session record in the database
+                        await Session.create({ userId: userData._id, sessionId: req.sessionID });
                         res.send({ "success": true, "status": "Success", "message": "user Login Successfully", "userId": userData._id, "token": token, "email": email, "name": userData.name, "expires": "7200" });
                     } else {
                         res.status(201).send({ "success": false, "status": "failed", "message": "Password or Email is invalid" })
@@ -69,7 +73,7 @@ class UserController {
                     res.status(201).send({ "success": false, "status": "failed", "message": "Email or Password is invalid" })
                 }
             } else {
-                res.status(201).send({ "success": false, "status": "failed", "errorMessage": "ALL_FIELD_REQUIRED" ,"message": "All fields required" })
+                res.status(201).send({ "success": false, "status": "failed", "errorMessage": "ALL_FIELD_REQUIRED", "message": "All fields required" })
             }
         } catch (error) {
             console.log(error);

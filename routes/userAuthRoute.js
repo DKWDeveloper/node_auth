@@ -4,6 +4,9 @@ import checkUserAuthMiddleware from "../middlewares/authMiddleware.js";
 import UserMobileOTP from "../controllers/mobileOTPverification.js";
 import UserData from "../controllers/userDataController.js";
 import multer from "multer";
+import sessionLogoutMiddleware from "../middlewares/sessionLogoutMiddleware.js";
+import checkSession from "../middlewares/multipleLoginMiddleware.js";
+
 
 const router = express.Router();
 
@@ -32,10 +35,11 @@ router.use('/updateUserById/:id', checkUserAuthMiddleware);
 router.use('/updateUserByBodyId', checkUserAuthMiddleware);
 router.use('/deleteById', checkUserAuthMiddleware);
 router.use('/deleteUserData/:id', checkUserAuthMiddleware);
+// router.use('/login', checkSession)
 
 //Public Routes
 router.post('/registration', UserController.userRegistration);
-router.post('/login', UserController.userLogin);
+router.post('/login',checkSession, UserController.userLogin);
 router.post('/myLogin', UserController.myLogin);
 router.post('/sendLinkEmail', UserController.sendUserPasswordResetEmail);
 router.post('/forgotPassword/userId/:id/token', UserController.forgotPassword);

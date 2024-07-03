@@ -13,9 +13,11 @@
   "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "connect-redis": "^7.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^5.0.0-alpha.8",
+    "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
     "messagebird": "^4.0.1",
     "mongoose": "^7.5.2",
@@ -25,6 +27,7 @@
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "razorpay": "^2.9.4",
+    "redis": "^4.6.15",
     "socket.io": "^4.7.2",
     "validator": "^13.11.0"
   }

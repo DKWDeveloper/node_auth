@@ -12,6 +12,9 @@ import Chat from './models/chat.js';
 //Socket imports
 import http from 'http'
 import { Server } from "socket.io";
+import sessionLogoutMiddleware from './middlewares/sessionLogoutMiddleware.js';
+import multipleUserLoginMiddleware from './middlewares/multipleLoginMiddleware.js';
+import session from 'express-session';
 
 
 const app = express();
@@ -34,14 +37,42 @@ connectDB(DATABASE_URL);
 //JSON
 app.use(express.json());
 
+
+//Multiple same user login Prevent middileware.
+// app.use(multipleUserLoginMiddleware)
+
+// Use the middleware
+// app.use(sessionLogoutMiddleware);
+
+// Middleware setup
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true
+}));
+
 //This middleware show internal server error.
 app.use((err, req, res, next) => {
-  console.error('Error 500', err.stack);
-  res.status(500).json({ error: 'Internal Server Errors ccvc' });
+  try {
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Errors ccvc' });
+  }
+  // console.log(req.body)
+  // console.error('Error 500', err.stack);
+  // res.status(500).json({ error: 'Internal Server Errors ccvc' });
 });
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
+
+// Error Handle Custom route to handle requests to /uploads/* when static file serving is disabled
+app.use('/uploads/*', (req, res) => {
+  res.status(404).send('File not found. Static file serving is currently disabled.');
+});
+
+// Use the middleware
+// app.use(sessionLogoutMiddleware);
 
 
 //Load Routes
